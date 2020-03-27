@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import time
-
+import smtplib
 
 class Currency:
     EURO = 'https://www.google.ru/search?newwindow=1&client=opera&sxsrf=ALeKk01z7Zv71DCVUExCLz-JPIXtDRGvvQ%3A1585302666167&ei=isx9XoDPCeGAk74Pi9-Q8Ag&q=курс+евро&oq=курс+евро&gs_l=psy-ab.1.0.0i131i70i258j0i131i20i263l2j0j0i131j0j0i67j0l3.1288827.1291879..1293667...1.3..0.220.1561.0j7j2......0....1..gws-wiz.....10..0i71j35i362i39j35i39j0i131i67j35i39i70i258j0i20i263.05SlAWaayuc'
@@ -31,15 +31,35 @@ class Currency:
         currency_euro = float(self.get_price_euro().replace(",","."))
         if currency_doll>=self.converted_price_doll+self.diff:
             print("курс доллара сильно вырос")
+            self.mail()
         elif currency_doll<=self.converted_price_doll-self.diff:
             print("курс доллара сильно упал")
+            self.mail()
         if currency_euro>=self.converted_price_euro+self.diff:
             print("курс евро сильно вырос")
+            self.mail()
         elif currency_euro<=self.converted_price_euro-self.diff:
             print("курс евро сильно упал")
+            self.mail()
         print(currency_doll)
         print(currency_euro)
         time.sleep(2)
         self.check()
+    def mail(self):
+        server=smtplib.SMTP('smtp.gmail.com',587)
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        server.login('example@gmail.com','fwefgwavawvr')
+        subject='Курс валют'
+        body='курс валют сильно изменился'
+        message=f'Subject: {subject}\n\n{body}'
+        server.sendmail(
+            'example.com',
+            'example@gmail.com',
+            message
+
+        )
+        server.quit()
 currency=Currency()
 currency.check()
